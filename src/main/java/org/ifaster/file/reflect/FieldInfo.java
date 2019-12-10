@@ -1,7 +1,7 @@
 package org.ifaster.file.reflect;
 
 import lombok.Getter;
-import org.ifaster.file.annotation.ExporterBody;
+import org.ifaster.file.annotation.Entity;
 import org.ifaster.file.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -17,31 +17,31 @@ public class FieldInfo {
     @Getter
     private final String header;
     @Getter
-    private final int order;
+    private final int index;
 
     public FieldInfo(Field field) {
         this.field = field;
         this.field.setAccessible(true);
-        ExporterBody exporterBody = field.getAnnotation(ExporterBody.class);
-        this.header = exporterBody.header();
-        this.order = exporterBody.order();
-        initFormatter(exporterBody);
+        Entity entity = field.getAnnotation(Entity.class);
+        this.header = entity.header();
+        this.index = entity.index();
+        initFormatter(entity);
     }
 
-    private void initFormatter(ExporterBody exporterBody) {
+    private void initFormatter(Entity entity) {
         Class<?> fieldType = field.getType();
         if (fieldType == String.class) {
             formatter = new DefaultFormatter();
-        } else if (!StringUtils.hasLength(exporterBody.format())) {
+        } else if (!StringUtils.hasLength(entity.format())) {
             formatter = new DefaultFormatter();
         } else if (fieldType == Date.class) {
-            formatter = new DateFormatter(exporterBody.format());
+            formatter = new DateFormatter(entity.format());
         } else if (fieldType == double.class) {
-            formatter = new NumberFormatter(exporterBody.format());
+            formatter = new NumberFormatter(entity.format());
         } else if (fieldType == float.class) {
-            formatter = new NumberFormatter(exporterBody.format());
+            formatter = new NumberFormatter(entity.format());
         } else if (Number.class.isAssignableFrom(fieldType)) {
-            formatter = new NumberFormatter(exporterBody.format());
+            formatter = new NumberFormatter(entity.format());
         } else {
             formatter = new DefaultFormatter();
         }

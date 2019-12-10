@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ExporterBody {
+public @interface Entity {
 
     /**
      * header 表头
@@ -30,9 +30,9 @@ public @interface ExporterBody {
     String format() default "";
 
     /**
-     * 排序 越小越靠前
+     * 索引值 越小越靠前
      * 不设置默认是字段书写顺序
      * @return
      */
-    int order() default 0;
+    int index() default 0;
 }

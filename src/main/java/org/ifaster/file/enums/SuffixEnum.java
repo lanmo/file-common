@@ -19,19 +19,4 @@ public enum SuffixEnum {
     }
     @Getter
     private String suffix;
-
-    /**
-     * 获取后缀
-     *
-     * @param suffix
-     * @return
-     */
-    public static SuffixEnum getSuffix(String suffix) {
-        for (SuffixEnum suffixEnum : values()) {
-            if (suffixEnum.getSuffix().equals(suffix)) {
-                return suffixEnum;
-            }
-        }
-        return DEFAULT;
-    }
 }

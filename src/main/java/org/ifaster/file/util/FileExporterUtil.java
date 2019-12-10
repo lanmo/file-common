@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.ifaster.file.annotation.ExporterBody;
+import org.ifaster.file.annotation.Entity;
 import org.ifaster.file.annotation.Exporter;
 import org.ifaster.file.annotation.Exporters;
 import org.ifaster.file.reflect.FieldInfo;
@@ -48,11 +48,11 @@ public class FileExporterUtil {
             LOGGER.warn("Exporters or Exporter Annotation is null");
             return;
         }
-        List<Field> fields = ClassUtil.getAnnotationField(tClass, ExporterBody.class);
-        Assert.notEmpty(fields, "fields must have ExporterBody Annotation");
+        List<Field> fields = ClassUtil.getAnnotationField(tClass, Entity.class);
+        Assert.notEmpty(fields, "fields must have Entity Annotation");
         List<FieldInfo> fieldInfoList = fields.stream().map(FieldInfo::new).collect(Collectors.toList());
         //升序排序
-        fieldInfoList.sort(Comparator.comparingInt(FieldInfo::getOrder));
+        fieldInfoList.sort(Comparator.comparingInt(FieldInfo::getIndex));
         if (doc != null) {
             export(values, fieldInfoList, fileFullName, doc);
         }
@@ -151,12 +151,12 @@ public class FileExporterUtil {
         try {
             if (doc.header()) {
                 List<String> headers = getHeader(fields);
-                String header = Joiner.join(headers, doc.column().getSeparator());
+                String header = Joiner.join(headers, doc.column());
                 pw.println(header);
             }
             for (T t : ts) {
                 List<String> contents = getContent(t, fields);
-                String content = Joiner.join(contents, doc.column().getSeparator());
+                String content = Joiner.join(contents, doc.column());
                 pw.println(content);
             }
         } finally {

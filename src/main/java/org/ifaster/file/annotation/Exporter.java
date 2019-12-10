@@ -7,7 +7,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.ifaster.file.enums.SeparatorEnum;
+
 import org.ifaster.file.enums.SuffixEnum;
 
 /**
@@ -30,7 +30,7 @@ public @interface Exporter {
      * excel不起作用
      * @return
      */
-    SeparatorEnum column() default SeparatorEnum.COMMA;
+    String column() default " ";
 
     /**
      * 字符集
