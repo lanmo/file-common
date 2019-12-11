@@ -2,6 +2,8 @@ package org.ifaster.file.reflect;
 
 import lombok.Getter;
 import org.ifaster.file.annotation.Column;
+import org.ifaster.file.listener.Listener;
+import org.ifaster.file.listener.NoOpListener;
 import org.ifaster.file.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -10,20 +12,16 @@ import java.util.Date;
 /**
  * @author yangnan
  */
+@Getter
 public class FieldInfo {
-    @Getter
     private final Field field;
-    @Getter
     private Formatter formatter;
-    @Getter
     private final String header;
-    @Getter
     private final int index;
-    @Getter
     private int[] composeIndex;
     private final Column column;
-    @Getter
     private String composeConnector;
+    private Listener listener;
 
     public FieldInfo(Field field) {
         this.field = field;
@@ -34,8 +32,21 @@ public class FieldInfo {
         this.composeIndex = column.composeIndex();
         this.composeConnector = column.composeConnector();
         initFormatter();
+        if (column.listener() == null || column.listener() == NoOpListener.class) {
+            listener = new NoOpListener();
+        } else {
+            try {
+                listener = column.listener().newInstance();
+            } catch (Exception e) {
+            }
+        }
+
     }
 
+    /**
+     * 初始化formatter
+     *
+     */
     private void initFormatter() {
         Class<?> fieldType = field.getType();
         if (fieldType == String.class) {

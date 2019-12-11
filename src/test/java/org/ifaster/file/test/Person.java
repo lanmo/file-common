@@ -25,7 +25,7 @@ public class Person {
     private Date day;
     @Column(header = "创建时间(时)", format = "HH:mm:ss", index = 3)
     private Date time;
-    @Column(header = "支付金额", format = "0.00", index = 4)
+    @Column(header = "支付金额", format = "0.00", index = 9)
     private double pay;
     @Column(header = "剩余金额", format = "0.00", index = 5)
     private BigDecimal payAmount;

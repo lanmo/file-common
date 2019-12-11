@@ -8,6 +8,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.ifaster.file.annotation.Column;
 import org.ifaster.file.annotation.Importer;
+import org.ifaster.file.reflect.Content;
 import org.ifaster.file.reflect.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,10 +50,7 @@ public class FileImporterUtil {
         List<FieldInfo> fieldInfoList = fields.stream().map(FieldInfo::new).collect(Collectors.toList());
         //升序排序
         fieldInfoList.sort(Comparator.comparingInt(FieldInfo::getIndex));
-        List<T> result = null;
-        if (importer != null) {
-            result = readFile(importer, fileName, fieldInfoList, tClass);
-        }
+        List<T> result = readFile(importer, fileName, fieldInfoList, tClass);
         fieldInfoList.clear();
         fields.clear();
         return result;
@@ -76,7 +74,7 @@ public class FileImporterUtil {
             case EXCEL:
                 return importExcel(fields, fileName + doc.suffix().getSuffix(), doc, tClass);
             default:
-                throw new IllegalArgumentException("不支持类型" + String.valueOf(doc.suffix()));
+                throw new IllegalArgumentException("不支持的文档类型" + String.valueOf(doc.suffix()));
         }
     }
 
@@ -111,11 +109,12 @@ public class FileImporterUtil {
                     Row row1 = sheet.getRow(row);
                     T t = tClass.newInstance();
                     for (FieldInfo fieldInfo : fields) {
-                        Cell cell = row1.getCell(fieldInfo.getIndex());
-                        if (cell == null) {
-                            continue;
+                        try {
+                            fieldInfo.setValue(t, getStringValue(row1, fieldInfo));
+                        } catch (Exception e) {
+                            Content c = Content.builder().row(row1).build();
+                            fieldInfo.getListener().importFail(t, fieldInfo, doc, c, e);
                         }
-                        fieldInfo.setValue(t, getStringValue(row1, fieldInfo));
                     }
                     result.add(t);
                 }
@@ -195,7 +194,12 @@ public class FileImporterUtil {
                 String[] contents = content.split(doc.column());
                 T t = tClass.newInstance();
                 for (FieldInfo fieldInfo : fields) {
-                    fieldInfo.setValue(t, getStringValue(contents, fieldInfo));
+                    try {
+                        fieldInfo.setValue(t, getStringValue(contents, fieldInfo));
+                    } catch (Exception e) {
+                        Content c = Content.builder().content(content).build();
+                        fieldInfo.getListener().importFail(t, fieldInfo, doc, c, e);
+                    }
                 }
                 result.add(t);
                 index++;

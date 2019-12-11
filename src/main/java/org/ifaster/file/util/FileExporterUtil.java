@@ -7,6 +7,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.ifaster.file.annotation.Column;
 import org.ifaster.file.annotation.Exporter;
 import org.ifaster.file.annotation.Exporters;
+import org.ifaster.file.reflect.Content;
 import org.ifaster.file.reflect.FieldInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,7 +71,7 @@ public class FileExporterUtil {
      * @param doc
      * @param <T>
      */
-    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporter doc) throws IOException, IllegalAccessException {
+    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporter doc) throws Exception {
         switch (doc.suffix()) {
             case DEFAULT:
             case TXT:
@@ -94,7 +95,7 @@ public class FileExporterUtil {
      * @param doc
      */
     private static <T> void exportExcel(List<T> ts, List<FieldInfo> fields, String fileFullName, Exporter doc)
-            throws IOException, IllegalAccessException {
+            throws Exception {
         int size = doc.rowAccessWindowSize();
         if (size <= 0) {
             size = WINDOW_SIZE;
@@ -115,7 +116,7 @@ public class FileExporterUtil {
 
             for (T t : ts) {
                 Row r = sheet.createRow(rowNumber++);
-                List<String> contents = getContent(t, fields);
+                List<String> contents = getContent(t, doc, fields);
                 for (int i=0; i<contents.size(); i++) {
                     Cell cell = r.createCell(i);
                     cell.setCellValue(contents.get(i));
@@ -142,7 +143,7 @@ public class FileExporterUtil {
      * @param <T>
      */
     private static <T> void exportDefault(List<T> ts, List<FieldInfo> fields, String fileFullName, Exporter doc)
-            throws IOException, IllegalAccessException {
+            throws Exception {
         PrintWriter pw = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileFullName, false), doc.charSet())));
         try {
             if (doc.header()) {
@@ -151,7 +152,7 @@ public class FileExporterUtil {
                 pw.println(header);
             }
             for (T t : ts) {
-                List<String> contents = getContent(t, fields);
+                List<String> contents = getContent(t, doc, fields);
                 String content = Joiner.join(contents, doc.column());
                 pw.println(content);
             }
@@ -166,12 +167,17 @@ public class FileExporterUtil {
      * @param t
      * @param fields
      * @param <T>
+     * @param doc
      * @returnø
      */
-    private static <T> List<String> getContent(T t, List<FieldInfo> fields) throws IllegalAccessException {
+    private static <T> List<String> getContent(T t, Exporter doc, List<FieldInfo> fields) throws Exception {
         List<String> contents = new ArrayList<String>(fields.size());
         for (FieldInfo f : fields) {
-            contents.add(f.getValue(t));
+            try {
+                contents.add(f.getValue(t));
+            } catch (Exception e) {
+                f.getListener().exportFail(t, f, doc, null, e);
+            }
         }
         return contents;
     }
@@ -196,7 +202,7 @@ public class FileExporterUtil {
      * @param docs
      * @param <T>
      */
-    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporters docs) throws IOException, IllegalAccessException {
+    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporters docs) throws Exception {
         Exporter[] exporters = docs.docs();
         for (Exporter doc : exporters) {
             export(values, fields, fileFullName, doc);

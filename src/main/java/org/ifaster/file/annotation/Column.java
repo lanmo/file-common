@@ -1,10 +1,9 @@
 package org.ifaster.file.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import org.ifaster.file.listener.Listener;
+import org.ifaster.file.listener.NoOpListener;
+
+import java.lang.annotation.*;
 
 /**
  * @author yangnan
@@ -50,5 +49,12 @@ public @interface Column {
      * @return
      */
     String composeConnector() default " ";
+
+    /**
+     * 导入
+     *
+     * @return
+     */
+    Class<? extends Listener> listener() default NoOpListener.class;
 
 }
