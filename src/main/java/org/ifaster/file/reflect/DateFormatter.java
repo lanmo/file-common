@@ -21,4 +21,9 @@ public class DateFormatter implements Formatter {
         }
         return dateFormat.format(value);
     }
+
+    @Override
+    public Object parse(String value, Class<?> type) throws Exception {
+        return dateFormat.parse(value);
+    }
 }

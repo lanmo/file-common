@@ -1,5 +1,7 @@
 package org.ifaster.file.annotation;
 
+import org.ifaster.file.enums.SuffixEnum;
+
 import java.lang.annotation.*;
 
 /**
@@ -11,6 +13,19 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Importer {
+
+    /**
+     * 文件后缀
+     * @return
+     */
+    SuffixEnum suffix() default SuffixEnum.TXT;
+
+    /**
+     * 列之间的分隔符
+     * excel不起作用
+     * @return
+     */
+    String column() default "";
 
     /**
      * 字符集

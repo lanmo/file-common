@@ -52,8 +52,35 @@ public class StringUtils {
      * @return
      */
     public static String getFileName(String fileFullName) {
-        String fileName = fileFullName.substring(fileFullName.lastIndexOf("/"));
-        return fileName.substring(fileName.lastIndexOf("."));
+        String fileName = fileFullName;
+        int index = fileFullName.lastIndexOf("/");
+        if (index >= 0) {
+            fileName = fileFullName.substring(fileFullName.lastIndexOf("/"));
+        }
+        return fileName;
     }
 
+    /**
+     * 获取文件名, 去除后缀
+     *
+     * @param fileFullName
+     * @return
+     */
+    public static String getFileNameSuffix(String fileFullName) {
+        String fileName = fileFullName;
+        int index = fileName.lastIndexOf(".");
+        if (index >= 0) {
+            fileName = fileName.substring(0, index);
+        }
+        return fileName;
+    }
+
+    /**
+     * 判断字符串是否为空
+     * @param value
+     * @return
+     */
+    public static boolean isBlank(String value) {
+        return value == null ? true : value.isEmpty();
+    }
 }

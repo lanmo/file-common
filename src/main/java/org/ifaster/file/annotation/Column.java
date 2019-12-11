@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Entity {
+public @interface Column {
 
     /**
      * header 表头
@@ -32,7 +32,23 @@ public @interface Entity {
     /**
      * 索引值 越小越靠前
      * 不设置默认是字段书写顺序
+     * 导入的时候 必须>=0
      * @return
      */
     int index() default 0;
+
+    /**
+     * 组合索引 数组里面写索引下标
+     *
+     * @return
+     */
+    int[] composeIndex() default {};
+
+    /**
+     * 配合 #composeIndex使用，组合索引的几个值的连接符
+     *
+     * @return
+     */
+    String composeConnector() default " ";
+
 }

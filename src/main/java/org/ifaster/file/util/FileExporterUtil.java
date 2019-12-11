@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.ifaster.file.annotation.Entity;
+import org.ifaster.file.annotation.Column;
 import org.ifaster.file.annotation.Exporter;
 import org.ifaster.file.annotation.Exporters;
 import org.ifaster.file.reflect.FieldInfo;
@@ -32,11 +32,10 @@ public class FileExporterUtil {
      * {@link Exporter}
      * {@link Exporters}
      *
-     * @param fileFullName 文件全路径名,不要带后缀,后缀会根据自动添加根据Document配置的
+     * @param fileFullName 文件全路径名,不要带后缀,后缀会自动添加根据Document配置的
      * @param values
-     * @return 文件路径 多个用#分割
      */
-    public static <T> void export(List<T> values, String fileFullName) {
+    public static <T> void export(List<T> values, String fileFullName) throws Exception {
         Assert.notEmpty(values, "Collection must have elements");
         Assert.hasLength(fileFullName, "fileFullName must be not null");
 
@@ -48,8 +47,8 @@ public class FileExporterUtil {
             LOGGER.warn("Exporters or Exporter Annotation is null");
             return;
         }
-        List<Field> fields = ClassUtil.getAnnotationField(tClass, Entity.class);
-        Assert.notEmpty(fields, "fields must have Entity Annotation");
+        List<Field> fields = ClassUtil.getAnnotationField(tClass, Column.class);
+        Assert.notEmpty(fields, "fields must have Column Annotation");
         List<FieldInfo> fieldInfoList = fields.stream().map(FieldInfo::new).collect(Collectors.toList());
         //升序排序
         fieldInfoList.sort(Comparator.comparingInt(FieldInfo::getIndex));
@@ -60,6 +59,7 @@ public class FileExporterUtil {
             export(values, fieldInfoList, fileFullName, exporters);
         }
         fields.clear();
+        fieldInfoList.clear();
         fields = null;
     }
 
@@ -70,22 +70,18 @@ public class FileExporterUtil {
      * @param doc
      * @param <T>
      */
-    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporter doc) {
-        try {
-            switch (doc.suffix()) {
-                case DEFAULT:
-                case TXT:
-                case CSV:
-                    exportDefault(values, fields, fileFullName + doc.suffix().getSuffix(), doc);
-                    break;
-                case EXCEL:
-                    exportExcel(values, fields, fileFullName + doc.suffix().getSuffix(), doc);
-                    break;
-                default:
-                    throw new IllegalArgumentException("不支持类型" + String.valueOf(doc.suffix()));
-            }
-        } catch (Throwable e) {
-            LOGGER.error("导出文件异常", e);
+    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporter doc) throws IOException, IllegalAccessException {
+        switch (doc.suffix()) {
+            case DEFAULT:
+            case TXT:
+            case CSV:
+                exportDefault(values, fields, fileFullName + doc.suffix().getSuffix(), doc);
+                break;
+            case EXCEL:
+                exportExcel(values, fields, fileFullName + doc.suffix().getSuffix(), doc);
+                break;
+            default:
+                throw new IllegalArgumentException("不支持类型" + String.valueOf(doc.suffix()));
         }
     }
 
@@ -200,7 +196,7 @@ public class FileExporterUtil {
      * @param docs
      * @param <T>
      */
-    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporters docs) {
+    private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporters docs) throws IOException, IllegalAccessException {
         Exporter[] exporters = docs.docs();
         for (Exporter doc : exporters) {
             export(values, fields, fileFullName, doc);
