@@ -29,4 +29,14 @@ public class FileConstant {
      * 反斜杠
      */
     public static final char BACKSLASH_CH = '/';
+
+    /**
+     * classpath 路径
+     */
+    public static final String CLASSPATH_PATH = "classpath:";
+
+    /**
+     * 默认字体路径
+     */
+    public static final String DEFAULT_FONT_PATH = "/tmp/font/";
 }
