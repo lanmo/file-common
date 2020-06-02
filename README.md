@@ -23,10 +23,10 @@
     
     public class FileExportTest {
     
-private static String path = "/Users/xxxxx/Downloads";
+    private static String path = "/Users/xxxxx/Downloads";
     private static String name = "test";
     
-public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception {
         List<Person> personList = new ArrayList<>();
         for (int i=0; i<10; i++) {
             Person person = new Person();
@@ -40,7 +40,7 @@ public static void main(String[] args) throws Exception {
         FileExporterUtil.export(personList, path+"\\"+name);
     }
     
-@Data
+    @Data
     @Exporter(suffix = SuffixEnum.TXT)
     @Exporter(suffix = SuffixEnum.CSV)
     @Exporter(suffix = SuffixEnum.EXCEL, rowAccessWindowSize = 1000)
