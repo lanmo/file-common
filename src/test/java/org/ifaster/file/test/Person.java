@@ -10,11 +10,9 @@ import org.ifaster.file.annotation.Importer;
 import org.ifaster.file.enums.SuffixEnum;
 
 @Data
-@Exporters(docs = {
-        @Exporter(column = " "),
-        @Exporter(column = ",", suffix = SuffixEnum.CSV),
-        @Exporter(column = ",", suffix = SuffixEnum.EXCEL, rowAccessWindowSize = 1),
-})
+@Exporter(column = " ")
+@Exporter(column = ",", suffix = SuffixEnum.CSV)
+@Exporter(column = ",", suffix = SuffixEnum.EXCEL, rowAccessWindowSize = 1)
 @Importer(suffix = SuffixEnum.EXCEL, column = " ")
 public class Person {
     @Column(header = "姓名", index = 0)

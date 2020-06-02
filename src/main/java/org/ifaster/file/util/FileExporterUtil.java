@@ -62,6 +62,7 @@ public class FileExporterUtil {
         fields.clear();
         fieldInfoList.clear();
         fields = null;
+        fieldInfoList = null;
     }
 
     /**
@@ -203,7 +204,7 @@ public class FileExporterUtil {
      * @param <T>
      */
     private static <T> void export(List<T> values, List<FieldInfo> fields, String fileFullName, Exporters docs) throws Exception {
-        Exporter[] exporters = docs.docs();
+        Exporter[] exporters = docs.value();
         for (Exporter doc : exporters) {
             export(values, fields, fileFullName, doc);
         }

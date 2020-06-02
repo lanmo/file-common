@@ -19,5 +19,5 @@ public @interface Exporters {
      * 多种文件类型
      * @return
      */
-    Exporter[] docs() default {};
+    Exporter[] value() default {};
 }

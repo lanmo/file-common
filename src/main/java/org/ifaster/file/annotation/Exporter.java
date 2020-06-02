@@ -2,11 +2,7 @@ package org.ifaster.file.annotation;
 
 import static org.ifaster.file.constant.FileConstant.WINDOW_SIZE;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import org.ifaster.file.enums.SuffixEnum;
 
@@ -17,6 +13,7 @@ import org.ifaster.file.enums.SuffixEnum;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Repeatable(value = Exporters.class)
 public @interface Exporter {
 
     /**
